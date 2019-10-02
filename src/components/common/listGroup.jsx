@@ -1,7 +1,7 @@
 import React from "react";
 
 const ListGroup = props => {
-  const { items, active, all, onClick, textProperty, valueProperty } = props;
+  const { items, active, onClick, textProperty, valueProperty } = props;
 
   if (items.length === 0) return null;
 

@@ -3,6 +3,7 @@ import Pagination from "./common/pagination";
 import ListGroup from "./common/listGroup";
 
 import { paginate } from "../utils/pagination";
+import { sort } from "../utils/sorting";
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 import MoviesTable from "./MoviesTable";
@@ -11,16 +12,26 @@ export class Vidya extends React.Component {
   state = {
     movies: [],
     genres: [],
-    activeGenreId: "0",
+    activeGenreId: "",
+    sorting: {
+      path: "title",
+      order: "asc"
+    },
     pagination: {
       active: 1,
       itemsPerPage: 4
     }
   };
 
+  handleSort = sorting => {
+    this.setState({
+      sorting
+    });
+  };
+
   componentDidMount() {
     const movies = getMovies();
-    const genres = [{ name: "All Genres", _id: "0" }, ...getGenres()];
+    const genres = [{ name: "All Genres", _id: "" }, ...getGenres()];
     this.setState({
       movies,
       genres
@@ -76,15 +87,18 @@ export class Vidya extends React.Component {
 
   render() {
     const { movies: allMovies, pagination, activeGenreId } = this.state;
+    const { path, order } = this.state.sorting;
 
     if (allMovies.length > 0) {
       const moviesToPaginate =
-        activeGenreId !== "0"
+        activeGenreId !== ""
           ? allMovies.filter(movie => movie.genre._id === activeGenreId)
           : allMovies;
 
+      const sorted = sort(moviesToPaginate, path, order);
+
       const movies = paginate(
-        moviesToPaginate,
+        sorted,
         this.state.pagination.active,
         this.state.pagination.itemsPerPage
       );
@@ -110,6 +124,8 @@ export class Vidya extends React.Component {
               movies={movies}
               onLike={this.toggleLike}
               onDelete={this.handleDelete}
+              onSort={this.handleSort}
+              sorting={this.state.sorting}
             />
             <Pagination
               pagination={pagination}
