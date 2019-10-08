@@ -29,11 +29,11 @@ class MoviesTable extends Component {
   ];
 
   render() {
-    const { movies, onLike, onDelete, onSort, sorting } = this.props;
+    const { movies, onSort, sorting } = this.props;
     return (
       <table className="table">
         <TableHeader columns={this.columns} onSort={onSort} sorting={sorting} />
-        <TableBody data={movies} columns={this.columns} />
+        <TableBody data={movies} columns={this.columns} itemKey="_id" />
       </table>
     );
   }

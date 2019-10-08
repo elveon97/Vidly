@@ -8,13 +8,20 @@ class TableBody extends React.Component {
     return _.get(item, column.path);
   }
 
+  createKey = (item, column) => {
+    return item[this.props.itemKey] + (column.path || column.key);
+  };
+
   render() {
+    const { itemKey } = this.props;
     return (
       <tbody>
         {this.props.data.map(item => (
-          <tr>
+          <tr key={item[itemKey]}>
             {this.props.columns.map(column => (
-              <td>{this.renderCell(item, column)}</td>
+              <td key={this.createKey(item, column)}>
+                {this.renderCell(item, column)}
+              </td>
             ))}
           </tr>
         ))}
