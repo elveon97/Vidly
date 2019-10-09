@@ -1,8 +1,6 @@
 import React from "react";
 
-const ListGroup = props => {
-  const { items, active, onClick, textProperty, valueProperty } = props;
-
+const ListGroup = ({ items, active, onClick, textProperty, valueProperty }) => {
   if (items.length === 0) return null;
 
   let jsxItems = [];

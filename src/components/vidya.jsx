@@ -85,40 +85,45 @@ export class Vidya extends React.Component {
     });
   };
 
-  render() {
-    const { movies: allMovies, pagination, activeGenreId } = this.state;
+  getPaginatedMovies = () => {
     const { path, order } = this.state.sorting;
+    const { movies: allMovies, activeGenreId } = this.state;
+
+    const moviesToPaginate =
+      activeGenreId !== ""
+        ? allMovies.filter(movie => movie.genre._id === activeGenreId)
+        : allMovies;
+
+    const sorted = sort(moviesToPaginate, path, order);
+
+    const movies = paginate(
+      sorted,
+      this.state.pagination.active,
+      this.state.pagination.itemsPerPage
+    );
+
+    return { movies: movies, length: moviesToPaginate.length };
+  };
+
+  render() {
+    const { movies: allMovies, pagination, activeGenreId, genres } = this.state;
 
     if (allMovies.length > 0) {
-      const moviesToPaginate =
-        activeGenreId !== ""
-          ? allMovies.filter(movie => movie.genre._id === activeGenreId)
-          : allMovies;
-
-      const sorted = sort(moviesToPaginate, path, order);
-
-      const movies = paginate(
-        sorted,
-        this.state.pagination.active,
-        this.state.pagination.itemsPerPage
-      );
+      const { movies, length } = this.getPaginatedMovies();
 
       return (
         <div className="row mt-4">
           <div className="col-2 mt-4">
             <ListGroup
-              items={this.state.genres}
-              active={this.state.activeGenreId}
+              items={genres}
+              active={activeGenreId}
               onClick={this.genreChanged}
             />
           </div>
           <div className="col">
             <h5>
-              {moviesToPaginate.length > 0 &&
-                "Showing " +
-                  moviesToPaginate.length +
-                  " movies in the database."}
-              {moviesToPaginate.length === 0 && "There are no movies"}
+              {length > 0 && "Showing " + length + " movies in the database."}
+              {length === 0 && "There are no movies"}
             </h5>
             <MoviesTable
               movies={movies}
@@ -129,7 +134,7 @@ export class Vidya extends React.Component {
             />
             <Pagination
               pagination={pagination}
-              numberItems={moviesToPaginate.length}
+              numberItems={length}
               onClick={this.handlePages}
             />
           </div>
